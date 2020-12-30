@@ -60,13 +60,13 @@ namespace opengl_beef {
             }
         }
 
-        public void Generate() {
+        public void Generate(string nameSpace) {
             Console.WriteLine("Generating Beef file.");
 
             using (StreamWriter writer = new StreamWriter("GL.bf", false)) {
                 writer.WriteLine("using System;");
                 writer.WriteLine();
-                writer.WriteLine("namespace opengl_beef {");
+                writer.WriteLine($"namespace {nameSpace} {{");
                 writer.WriteLine("    class GL {");
 
                 WriteFirstThings(writer);
@@ -83,12 +83,12 @@ namespace opengl_beef {
         }
 
         private void WriteFirstThings(StreamWriter writer) {
-            writer.WriteLine("        public function void* GetProcAddressFunc(StringView procname);");
+            writer.WriteLine("        public function void* GetProcAddressFunc(char8* procname);");
         }
 
         private void WriteEnums(StreamWriter writer) {
             foreach (GlEnum glEnum in Enums) {
-                writer.WriteLine("        public const uint " + glEnum.Name + " = " + glEnum.Value + ";");
+                writer.WriteLine($"        public const uint {glEnum.Name} = {(glEnum.Value.StartsWith('-') ? "(uint)" : "")}{glEnum.Value};");
             }
         }
 
@@ -174,6 +174,10 @@ namespace opengl_beef {
                 case "GLDEBUGPROC":          
                 case "GLDEBUGPROCARB":       
                 case "GLDEBUGPROCKHR":       return $"function void({ConvertType("GLenum", isPointer)} source, {ConvertType("GLenum", isPointer)} type, {ConvertType("GLuint", isPointer)} id, {ConvertType("GLenum", isPointer)} severity, {ConvertType("GLsizei", isPointer)} length, {ConvertType("GLchar", isPointer)}* message, void* userParam)";
+                case "GLvdpauSurfaceNV":     return "void*";
+                case "GLVULKANPROCNV":       return "void*";
+                case "GLDEBUGPROCAMD":       return "void*";
+                case "GLhalfNV":             return "uint16";
                 default:                     return type.Replace("const", "").Trim();
             }
         }

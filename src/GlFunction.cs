@@ -33,9 +33,14 @@ namespace opengl_beef {
                     }
                 } else splitI = node.InnerText.LastIndexOf(' ');
 
+                Pointer ??= "";
                 Type = node.InnerText.Substring(0, splitI).Trim();
                 Name = node.InnerText.Substring(splitI + 1).Trim();
             }
+
+            if (Name == "box") Name = "_box";
+            else if (Name == "in") Name = "_in";
+            else if (Name == "out") Name = "_out";
         }
     }
 

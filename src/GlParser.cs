@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace opengl_beef {
     class GlParser {
@@ -40,7 +41,7 @@ namespace opengl_beef {
         private static void ParseEnums(XmlDocument xml) {
             foreach (XmlNode enumsNode in xml.GetElementsByTagName("enums")) {
                 foreach (XmlNode enumNode in enumsNode) {
-                    if (enumNode.Name == "enum" && enumNode.Attributes["api"] == null) {
+                    if (enumNode.Name == "enum" && (enumNode.Attributes["api"] == null || enumNode.Attributes["api"].Value == "gl")) {
                         GlEnum glEnum = new GlEnum(enumNode);
                         Enums.Add(glEnum.Name, glEnum);
                     }
@@ -52,8 +53,11 @@ namespace opengl_beef {
             foreach (XmlNode commandsNode in xml.GetElementsByTagName("commands")) {
                 foreach (XmlNode commandNode in commandsNode) {
                     if (commandNode.Name == "command") {
-                        GlFunction glFunction = new GlFunction(commandNode);
-                        Functions.Add(glFunction.Name, glFunction);
+	                    if (!commandNode.InnerText.Contains("struct "))//commands with structs arent supported yet
+                        {
+	                        GlFunction glFunction = new GlFunction(commandNode);
+                            Functions.Add(glFunction.Name, glFunction);
+                        }
                     }
                 }
             }
@@ -64,6 +68,14 @@ namespace opengl_beef {
                 if (featureNode.Attributes["api"].Value == "gl") {
                     Versions.Add(new GlVersion(featureNode));
                 }
+            }
+
+            foreach(XmlNode featureNode in xml.GetElementsByTagName("extension"))
+            {
+	            if(featureNode.Attributes["supported"].Value.Split('|').Contains("gl"))
+	            {
+		            Versions.Add(new GlVersion(featureNode));
+	            }
             }
 
             Versions.Sort();

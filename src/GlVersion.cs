@@ -22,7 +22,7 @@ namespace opengl_beef {
         public List<GlFunction> AddedCompatibilityFunctions { get; }
 
         public GlVersion(XmlNode node) {
-            Version = node.Attributes["number"].Value;
+            Version = node.Attributes["number"]?.Value ?? "0.0";
             VersionDouble = double.Parse(Version, CultureInfo.InvariantCulture);
 
             AddedEnums = new List<GlEnum>();
@@ -48,8 +48,13 @@ namespace opengl_beef {
             foreach (XmlNode childNode in node) {
                 if (childNode.Name == "enum") {
                     enums.Add(GlParser.Enums[childNode.Attributes["name"].Value]);
-                } else if (childNode.Name == "command") {
-                    functions.Add(GlParser.Functions[childNode.Attributes["name"].Value]);
+                } else if (childNode.Name == "command")
+                {
+	                var name = childNode.Attributes["name"].Value;
+	                if (GlParser.Functions.ContainsKey(name))
+	                {
+		                functions.Add(GlParser.Functions[name]);
+                    }
                 }
             }
         }

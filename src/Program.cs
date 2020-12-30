@@ -18,7 +18,7 @@ namespace opengl_beef {
                 return;
             }
 
-            new GlFullVersion(glVersion, options.Profile).Generate();
+            new GlFullVersion(glVersion, options.Profile).Generate(options.nameSpace);
         }
 
         static Stream GetGlXmlStream() {

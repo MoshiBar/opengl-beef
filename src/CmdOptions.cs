@@ -8,5 +8,8 @@ namespace opengl_beef {
 
         [Option("profile", Required = true, HelpText = "OpenGL profile to generate. (Core or Compatibility)")]
         public GlProfile Profile { get; set; }
+
+        [Option("nameSpace", Required = false, HelpText = "namespace for output file", Default = "opengl-beef")]
+        public String nameSpace { get; set; }
     }
 }
